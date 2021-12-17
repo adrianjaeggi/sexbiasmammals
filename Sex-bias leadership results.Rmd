@@ -123,15 +123,15 @@ library(TreeTools)
 
 # compute consensus tree to get tip order to be plotted
 # for some reason, the order of tip labels only updates after writing the tree -> write and re-read
-cons.tree<- consensus.edges(ntrees)
+cons.tree<- consensus.edges(trees)
 write.tree(cons.tree, "PhyForFigure.tre")
 cons.tree<- read.tree("PhyForFigure.tre")
 
 
 # create vector of traits per species
-t.mov<- table(d2$Genus_species, d2$Movement_zero_center.fact)
+t.mov<- table(d$Genus_species, d$Movement_zero_center.fact)
 t2.mov<- t.mov[ order(match(rownames(t.mov), cons.tree$tip.label)), ]
-t.bgc<- table(d2$Genus_species, d2$Between.Conflict_zero_center.fact)
+t.bgc<- table(d$Genus_species, d$Between.Conflict_zero_center.fact)
 t2.bgc<- t.bgc[ order(match(rownames(t.bgc), cons.tree$tip.label)), ]
 
 tiff("Figure 1.tif", compression="lzw", height=6.0, width=6.0, units="cm", res=600, pointsize=5)
