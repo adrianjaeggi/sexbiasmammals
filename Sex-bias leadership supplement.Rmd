@@ -1,0 +1,138 @@
+---
+title: "Sex bias in intergroup conflict and collective movements among social mammals"
+subtitle: "Supplementary Materials"
+author: "Jennifer Smith, Claudia Fichtel, Rose Holmes, Peter Kappeler, Mark van Vugt, and Adrian Jaeggi"
+toc: true
+output:
+  pdf_document: default
+    
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+```
+
+\newpage
+# Supplemental text
+
+## Multinomial model definition
+For each of the two contexts, intergroup conflict and collective movement, each species in our dataset can take on any of three mutually exclusive categories: female-biased, unbiased, or male-biased. Such a data structure is best modeled using a multinomial distribution, wherein we estimate the probability of being in $k-1$ of $k$ possible states. Specifically, we here set "unbiased" as our reference category, leaving any given observation $Y_{i}$ to be determined by the probability of female-biased, $\pi_{Fi}$, and the probabiltiy of male-biased, $\pi_{Mi}$:
+$$Y_{i} \sim {\sf Multinomial}(n, {\langle }\pi_{Fi}, \pi_{Mi}\rangle)$$
+In our case, we only have a single record, or "trial", for each unit of observation, hence $n=1$, and we therefore have a categorical distribution as a special case of a multinomial - this is analogous to the bernoulli distribution being a special case of the binomial with a single trial, when $k=2$.
+
+The probabilities of female-bias and male-bias then each get their own linear model:
+$$logit(\pi_{Fi}) = \alpha^{F} + \alpha_{Phylo\left[i\right]}^{F} + \alpha_{Species\left[i\right]}^{F} + \beta_{x}^{F} \cdot X_{i} $$
+and
+$$logit(\pi_{Mi}) = \alpha^{M} + \alpha_{Phylo\left[i\right]}^{M} + \alpha_{Species\left[i\right]}^{M} + \beta_{x}^{M} \cdot X_{i} $$
+wherein $^{F}$ and $^{M}$ denote coefficients of the female-bias and male-bias linear models, respectively, $\alpha$ is the global intercept, $\alpha_{Phylo\left[i\right]}$ is a vector of random intercepts the expected covariance of which is given by the phylogeny (see below), $\alpha_{Species\left[i\right]}$ is a vector of additional species-level intercepts accounting for repeated observations of some species (only for intergroup conflict) and capturing any between-species variation that is not captured by phylogeny. Finally, $\beta_{x} \cdot X_{i}$ are potential predictors and their associated regression coefficients. In Model 1, $\beta_{x} \cdot X_{i}$ is absent, in Model 2, there are two predictors and associated coefficients (sexual dimorphism, food defensibility), while Model 3 and 4 have one predictor each (primate, and leadership during movement, respectively).
+
+We set weakly regularizing priors on the intercepts and slopes, centering prior probability on 0 and penalizing extreme values, which helps model convergence:
+$$\alpha \sim {\sf Normal}(0, 5)$$
+$$\beta_{x} \sim {\sf Normal}(0, 2)$$
+The vector of phylogenetic random effects $\alpha_{Phylo\left[i\right]}$ is given by
+$$\begin{bmatrix}
+\alpha_{Phylo\left[1\right]}\\
+\vdots\\
+\alpha_{Phylo\left[N\right]}
+\end{bmatrix} \sim {\sf MVNormal}(\begin{bmatrix}
+0\\
+\vdots\\
+0
+\end{bmatrix}, \sigma_{Phylo} \cdot A)$$
+wherein $A$ is the phylogenetic variance-covariance matrix, scaled by $\sigma_{Phylo}$. In contrast, the additional species-level intercepts $\alpha_{Species}$ are assumed to be independent, with their variance captured by $\sigma_{Species}$: 
+$$\alpha_{Species} \sim {\sf Normal}(0, \sigma_{Species})$$
+
+In order to achieve model convergence, we had to put relatively strong priors on the variance components:
+$$\sigma_{Phylo}, \sigma_{Species} \sim {\sf HalfCauchy}(0, 0.1)$$
+Using weaker priors such as $HalfCauchy(0,1)$ results in larger phylogenetic signal, as $\sigma_{Phylo}$ is allowed to take on larger values, but no qualitative differences in inference.  
+
+\newpage
+# Supplemental Results
+
+## Model 1: No predictors
+Full summary of Model 1, estimating the likelihood of sex bias in movement or intergroup conflict without any predictors. Note that the reference level for the outcome variable is “unbiased”, hence we are estimating the probabilities of female bias ($\pi_{F}$) and male bias ($\pi_{M}$). In order to differentiate coefficients of the female bias and male bias linear models, we here put the corresponding outcome in parentheses, e.g. $\alpha^{F}$ is spelled out as Intercept (female bias). All estimates are on the log-odds scale and summarized by the mean and 95% credible interval ("lwr95CI" - "upr95CI") of the posterior distribution.
+
+
+**Table S2**: Predicting the probability of sex biased participation in intergroup conflict (Model 1)
+```{r table s2}
+library(knitr)
+library(rethinking)
+load("post_bgc.1_looped.robj")
+load("post_mov.1_looped.robj")
+s2<- data.frame(Parameter = c("Intercept (female bias)", "Intercept (male bias)", "Phylo SD (female bias)", "Phylo SD (male bias)", "Species SD (female bias)", "Species SD (male bias)"), Mean = c(round(mean(post_bgc.1_looped$b_muFemalebiased_Intercept),2), round(mean(post_bgc.1_looped$b_muMalebiased_Intercept),2), round(mean(post_bgc.1_looped$sd_phylo__muFemalebiased_Intercept),2), round(mean(post_bgc.1_looped$sd_phylo__muMalebiased_Intercept),2), round(mean(post_bgc.1_looped$sd_Genus_species__muFemalebiased_Intercept),2), round(mean(post_bgc.1_looped$sd_Genus_species__muMalebiased_Intercept),2)), lwr95CI = c(round(HPDI(post_bgc.1_looped$b_muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.1_looped$b_muMalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.1_looped$sd_phylo__muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.1_looped$sd_phylo__muMalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.1_looped$sd_Genus_species__muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.1_looped$sd_Genus_species__muMalebiased_Intercept, prob=0.95)[1],2)), upr95CI = c(round(HPDI(post_bgc.1_looped$b_muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.1_looped$b_muMalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.1_looped$sd_phylo__muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.1_looped$sd_phylo__muMalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.1_looped$sd_Genus_species__muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.1_looped$sd_Genus_species__muMalebiased_Intercept, prob=0.95)[2],2)))
+kable(s2)
+```
+
+
+**Table S3**: Predicting the probability of sex biased leadership during collective movement (Model 1)
+```{r table s3}
+s3<- data.frame(Parameter = c("Intercept (female bias)", "Intercept (male bias)", "Phylo SD (female bias)", "Phylo SD (male bias)"), Mean = c(round(mean(post_mov.1_looped$b_muFemalebiased_Intercept),2), round(mean(post_mov.1_looped$b_muMalebiased_Intercept),2), round(mean(post_mov.1_looped$sd_phylo__muFemalebiased_Intercept),2), round(mean(post_mov.1_looped$sd_phylo__muMalebiased_Intercept),2)), lwr95CI = c(round(HPDI(post_mov.1_looped$b_muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_mov.1_looped$b_muMalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_mov.1_looped$sd_phylo__muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_mov.1_looped$sd_phylo__muMalebiased_Intercept, prob=0.95)[1],2)), upr95CI = c(round(HPDI(post_mov.1_looped$b_muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_mov.1_looped$b_muMalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_mov.1_looped$sd_phylo__muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_mov.1_looped$sd_phylo__muMalebiased_Intercept, prob=0.95)[2],2)))
+kable(s3)
+
+```
+
+\newpage
+## Model 2: Sexual dimorphism and food defensibility
+Full summary of Model 2, estimating the likelihood of sex bias in movement or intergroup conflict with the predictors sexual dimorphism and food defensibility. Note that the reference level for the outcome variable is “unbiased”, hence we are estimating the probabilities of female bias ($\pi_{F}$) and male bias ($\pi_{M}$). In order to differentiate coefficients of the female bias and male bias linear models, we here put the corresponding outcome in parentheses, e.g. $\alpha^{F}$ is spelled out as Intercept (female bias). Sexual dimorphism is centered on 0 such that the intercepts represent a monomorphic species, and the reference category for food defensibility is 0 (non-defensible). All estimates are on the log-odds scale and summarized by the mean and 95% credible interval ("lwr95CI" - "upr95CI") of the posterior distribution.
+
+
+**Table S4**: Predicting the probability of sex biased participation in intergroup conflict (Model 2)
+```{r table s4}
+load("post_bgc.2_looped.robj")
+load("post_mov.2_looped.robj")
+s4<- data.frame(Parameter = c("Intercept (female bias)", "Intercept (male bias)", "Sexual dimorphism (female bias)", "Sexual dimorphism (male bias)", "Food = defensible (female bias)", "Food = defensible (male bias)", "Phylo SD (female bias)", "Phylo SD (male bias)", "Species SD (female bias)", "Species SD (male bias)"), Mean = c(round(mean(post_bgc.2_looped$b_muFemalebiased_Intercept),2), round(mean(post_bgc.2_looped$b_muMalebiased_Intercept),2), round(mean(post_bgc.2_looped$b_muFemalebiased_Sex_Dim.z),2), round(mean(post_bgc.2_looped$b_muMalebiased_Sex_Dim.z),2), round(mean(post_bgc.2_looped$b_muFemalebiased_Food_resource_defendable),2), round(mean(post_bgc.2_looped$b_muMalebiased_Food_resource_defendable),2), round(mean(post_bgc.2_looped$sd_phylo__muFemalebiased_Intercept),2), round(mean(post_bgc.2_looped$sd_phylo__muMalebiased_Intercept),2),                round(mean(post_bgc.2_looped$sd_Genus_species__muFemalebiased_Intercept),2), round(mean(post_bgc.2_looped$sd_Genus_species__muMalebiased_Intercept),2)), lwr95CI = c(round(HPDI(post_bgc.2_looped$b_muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.2_looped$b_muMalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.2_looped$b_muFemalebiased_Sex_Dim.z, prob=0.95)[1],2), round(HPDI(post_bgc.2_looped$b_muMalebiased_Sex_Dim.z, prob=0.95)[1],2), round(HPDI(post_bgc.2_looped$b_muFemalebiased_Food_resource_defendable, prob=0.95)[1],2), round(HPDI(post_bgc.2_looped$b_muMalebiased_Food_resource_defendable, prob=0.95)[1],2), round(HPDI(post_bgc.2_looped$sd_phylo__muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.2_looped$sd_phylo__muMalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.2_looped$sd_Genus_species__muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.2_looped$sd_Genus_species__muMalebiased_Intercept, prob=0.95)[1],2)), upr95CI = c(round(HPDI(post_bgc.2_looped$b_muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.2_looped$b_muMalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.2_looped$b_muFemalebiased_Sex_Dim.z, prob=0.95)[2],2), round(HPDI(post_bgc.2_looped$b_muMalebiased_Sex_Dim.z, prob=0.95)[2],2), round(HPDI(post_bgc.2_looped$b_muFemalebiased_Food_resource_defendable, prob=0.95)[2],2), round(HPDI(post_bgc.2_looped$b_muMalebiased_Food_resource_defendable, prob=0.95)[2],2), round(HPDI(post_bgc.2_looped$sd_phylo__muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.2_looped$sd_phylo__muMalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.2_looped$sd_Genus_species__muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.2_looped$sd_Genus_species__muMalebiased_Intercept, prob=0.95)[2],2)))
+kable(s4)
+```
+
+
+**Table S5**: Predicting the probability of sex biased leadership during collective movement (Model 2)
+```{r table s5}
+s5<- data.frame(Parameter = c("Intercept (female bias)", "Intercept (male bias)", "Sexual dimorphism (female bias)", "Sexual dimorphism (male bias)", "Food = defensible (female bias)", "Food = defensible (male bias)", "Phylo SD (female bias)", "Phylo SD (male bias)"), Mean = c(round(mean(post_mov.2_looped$b_muFemalebiased_Intercept),2), round(mean(post_mov.2_looped$b_muMalebiased_Intercept),2), round(mean(post_mov.2_looped$b_muFemalebiased_Sex_Dim.z),2), round(mean(post_mov.2_looped$b_muMalebiased_Sex_Dim.z),2), round(mean(post_mov.2_looped$b_muFemalebiased_Food_resource_defendable),2), round(mean(post_mov.2_looped$b_muMalebiased_Food_resource_defendable),2), round(mean(post_mov.2_looped$sd_phylo__muFemalebiased_Intercept),2), round(mean(post_mov.2_looped$sd_phylo__muMalebiased_Intercept),2)), lwr95CI = c(round(HPDI(post_mov.2_looped$b_muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_mov.2_looped$b_muMalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_mov.2_looped$b_muFemalebiased_Sex_Dim.z, prob=0.95)[1],2), round(HPDI(post_mov.2_looped$b_muMalebiased_Sex_Dim.z, prob=0.95)[1],2), round(HPDI(post_mov.2_looped$b_muFemalebiased_Food_resource_defendable, prob=0.95)[1],2), round(HPDI(post_mov.2_looped$b_muMalebiased_Food_resource_defendable, prob=0.95)[1],2), round(HPDI(post_mov.2_looped$sd_phylo__muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_mov.2_looped$sd_phylo__muMalebiased_Intercept, prob=0.95)[1],2)), upr95CI = c(round(HPDI(post_mov.2_looped$b_muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_mov.2_looped$b_muMalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_mov.2_looped$b_muFemalebiased_Sex_Dim.z, prob=0.95)[2],2), round(HPDI(post_mov.2_looped$b_muMalebiased_Sex_Dim.z, prob=0.95)[2],2), round(HPDI(post_mov.2_looped$b_muFemalebiased_Food_resource_defendable, prob=0.95)[2],2), round(HPDI(post_mov.2_looped$b_muMalebiased_Food_resource_defendable, prob=0.95)[2],2), round(HPDI(post_mov.2_looped$sd_phylo__muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_mov.2_looped$sd_phylo__muMalebiased_Intercept, prob=0.95)[2],2)))
+kable(s5)
+
+```
+
+
+\newpage
+## Model 3: Primates vs non-primates
+Full summary of Model 3, estimating the likelihood of sex bias in movement or intergroup conflict with the predictor primates vs non-primates. Note that the reference level for the outcome variable is “unbiased”, hence we are estimating the probabilities of female bias ($\pi_{F}$) and male bias ($\pi_{M}$). In order to differentiate coefficients of the female bias and male bias linear models, we here put the corresponding outcome in parentheses, e.g. $\alpha^{F}$ is spelled out as Intercept (female bias). The reference level for the predictor is non-primates. All estimates are on the log-odds scale and summarized by the mean and 95% credible interval ("lwr95CI" - "upr95CI") of the posterior distribution.
+
+
+**Table S6**: Predicting the probability of sex biased participation in intergroup conflict (Model 3)
+```{r table s6}
+load("post_bgc.3_looped.robj")
+load("post_mov.3_looped.robj")
+s6<- data.frame(Parameter = c("Intercept (female bias)", "Intercept (male bias)", "Primate (female bias)", "Primate (male bias)", "Phylo SD (female bias)", "Phylo SD (male bias)", "Species SD (female bias)", "Species SD (male bias)"), Mean = c(round(mean(post_bgc.3_looped$b_muFemalebiased_Intercept),2), round(mean(post_bgc.3_looped$b_muMalebiased_Intercept),2), round(mean(post_bgc.3_looped$b_muFemalebiased_Primate),2), round(mean(post_bgc.3_looped$b_muMalebiased_Primate),2), round(mean(post_bgc.3_looped$sd_phylo__muFemalebiased_Intercept),2), round(mean(post_bgc.3_looped$sd_phylo__muMalebiased_Intercept),2),                round(mean(post_bgc.3_looped$sd_Genus_species__muFemalebiased_Intercept),2), round(mean(post_bgc.3_looped$sd_Genus_species__muMalebiased_Intercept),2)), lwr95CI = c(round(HPDI(post_bgc.3_looped$b_muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.3_looped$b_muMalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.3_looped$b_muFemalebiased_Primate, prob=0.95)[1],2), round(HPDI(post_bgc.3_looped$b_muFemalebiased_Primate, prob=0.95)[1],2), round(HPDI(post_bgc.3_looped$sd_phylo__muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.3_looped$sd_phylo__muMalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.3_looped$sd_Genus_species__muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.3_looped$sd_Genus_species__muMalebiased_Intercept, prob=0.95)[1],2)), upr95CI = c(round(HPDI(post_bgc.3_looped$b_muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.3_looped$b_muMalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.3_looped$b_muFemalebiased_Primate, prob=0.95)[2],2), round(HPDI(post_bgc.3_looped$b_muMalebiased_Primate, prob=0.95)[2],2), round(HPDI(post_bgc.3_looped$sd_phylo__muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.3_looped$sd_phylo__muMalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.3_looped$sd_Genus_species__muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.3_looped$sd_Genus_species__muMalebiased_Intercept, prob=0.95)[2],2)))
+kable(s6)
+```
+
+
+**Table S7**: Predicting the probability of sex biased leadership during collective movement (Model 3)
+```{r table s7}
+s7<- data.frame(Parameter = c("Intercept (female bias)", "Intercept (male bias)", "Primate (female bias)", "Primate (male bias)", "Phylo SD (female bias)", "Phylo SD (male bias)"), Mean = c(round(mean(post_mov.3_looped$b_muFemalebiased_Intercept),2), round(mean(post_mov.3_looped$b_muMalebiased_Intercept),2), round(mean(post_mov.3_looped$b_muFemalebiased_Primate),2), round(mean(post_mov.3_looped$b_muMalebiased_Primate),2), round(mean(post_mov.3_looped$sd_phylo__muFemalebiased_Intercept),2), round(mean(post_mov.3_looped$sd_phylo__muMalebiased_Intercept),2)), lwr95CI = c(round(HPDI(post_mov.3_looped$b_muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_mov.3_looped$b_muMalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_mov.3_looped$b_muFemalebiased_Primate, prob=0.95)[1],2), round(HPDI(post_mov.3_looped$b_muMalebiased_Primate, prob=0.95)[1],2), round(HPDI(post_mov.3_looped$sd_phylo__muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_mov.3_looped$sd_phylo__muMalebiased_Intercept, prob=0.95)[1],2)), upr95CI = c(round(HPDI(post_mov.3_looped$b_muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_mov.3_looped$b_muMalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_mov.3_looped$b_muFemalebiased_Primate, prob=0.95)[2],2), round(HPDI(post_mov.3_looped$b_muMalebiased_Primate, prob=0.95)[2],2), round(HPDI(post_mov.3_looped$sd_phylo__muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_mov.3_looped$sd_phylo__muMalebiased_Intercept, prob=0.95)[2],2)))
+kable(s7)
+
+```
+
+
+\newpage
+## Model 4: Intergroup conflict predicted by collective movement
+Full summary of Model 4, estimating the likelihood of sex bias in intergroup conflict with the predictor leadership in collective movement. Note that the reference level for the outcome variable is “unbiased”, hence we are estimating the probabilities of female bias ($\pi_{F}$) and male bias ($\pi_{M}$). In order to differentiate coefficients of the female bias and male bias linear models, we here put the corresponding outcome in parentheses, e.g. $\alpha^{F}$ is spelled out as Intercept (female bias). The reference level for the predictor is also "unbiased". All estimates are on the log-odds scale and summarized by the mean and 95% credible interval ("lwr95CI" - "upr95CI") of the posterior distribution.
+
+
+**Table S8**: Predicting the probability of sex biased participation in intergroup conflict (Model 4)
+```{r table s8}
+load("post_bgc.4_looped.robj")
+s8<- data.frame(Parameter = c("Intercept (female bias)", "Intercept (male bias)", "Movement leadership = female biased (female bias)", "Movement leadership = male biased (female bias)", "Movement leadership = female biased (male bias)", "Movement leadership = male biased (male bias)", "Phylo SD (female bias)", "Phylo SD (male bias)", "Species SD (female bias)", "Species SD (male bias)"), Mean = c(round(mean(post_bgc.4_looped$b_muFemalebiased_Intercept),2), round(mean(post_bgc.4_looped$b_muMalebiased_Intercept),2), round(mean(post_bgc.4_looped$b_muFemalebiased_Movement_zero_center.factFemaleMbiased),2), round(mean(post_bgc.4_looped$b_muFemalebiased_Movement_zero_center.factMaleMbiased),2), round(mean(post_bgc.4_looped$b_muMalebiased_Movement_zero_center.factFemaleMbiased),2), round(mean(post_bgc.4_looped$b_muMalebiased_Movement_zero_center.factMaleMbiased),2), round(mean(post_bgc.4_looped$sd_phylo__muFemalebiased_Intercept),2), round(mean(post_bgc.4_looped$sd_phylo__muMalebiased_Intercept),2),                round(mean(post_bgc.4_looped$sd_Genus_species__muFemalebiased_Intercept),2), round(mean(post_bgc.4_looped$sd_Genus_species__muMalebiased_Intercept),2)), lwr95CI = c(round(HPDI(post_bgc.4_looped$b_muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.4_looped$b_muMalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.4_looped$b_muFemalebiased_Movement_zero_center.factFemaleMbiased, prob=0.95)[1],2), round(HPDI(post_bgc.4_looped$b_muFemalebiased_Movement_zero_center.factMaleMbiased, prob=0.95)[1],2), round(HPDI(post_bgc.4_looped$b_muMalebiased_Movement_zero_center.factFemaleMbiased, prob=0.95)[1],2), round(HPDI(post_bgc.4_looped$b_muMalebiased_Movement_zero_center.factMaleMbiased, prob=0.95)[1],2), round(HPDI(post_bgc.4_looped$sd_phylo__muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.4_looped$sd_phylo__muMalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.4_looped$sd_Genus_species__muFemalebiased_Intercept, prob=0.95)[1],2), round(HPDI(post_bgc.4_looped$sd_Genus_species__muMalebiased_Intercept, prob=0.95)[1],2)), upr95CI = c(round(HPDI(post_bgc.4_looped$b_muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.4_looped$b_muMalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.4_looped$b_muFemalebiased_Movement_zero_center.factFemaleMbiased, prob=0.95)[2],2), round(HPDI(post_bgc.4_looped$b_muFemalebiased_Movement_zero_center.factMaleMbiased, prob=0.95)[2],2), round(HPDI(post_bgc.4_looped$b_muMalebiased_Movement_zero_center.factFemaleMbiased, prob=0.95)[2],2), round(HPDI(post_bgc.4_looped$b_muMalebiased_Movement_zero_center.factMaleMbiased, prob=0.95)[2],2), round(HPDI(post_bgc.4_looped$sd_phylo__muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.4_looped$sd_phylo__muMalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.4_looped$sd_Genus_species__muFemalebiased_Intercept, prob=0.95)[2],2), round(HPDI(post_bgc.4_looped$sd_Genus_species__muMalebiased_Intercept, prob=0.95)[2],2)))
+kable(s8)
+```
+
+
+
+
+
+
+
+
+
+
