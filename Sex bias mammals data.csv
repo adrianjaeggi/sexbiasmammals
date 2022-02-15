@@ -11,7 +11,7 @@
 "Panthera_leo",1.28,1,"Female-biased","Unbiased",0
 "Panthera_leo",1.28,1,NA,"Male-biased",0
 "Helogale_parvula",1,0,"Female-biased","Male-biased",0
-"Mungos_mungo",1.03,0,"Female-biased","Female-biased",0
+"Mungos_mungo",1.03,0,"Female-biased","Male-biased",0
 "Suricata_suricatta",1.09,0,"Female-biased","Male-biased",0
 "Crocuta_crocuta",0.9,1,"Female-biased","Female-biased",0
 "Pteronura_brasiliensis",1.12,1,"Female-biased","Unbiased",0
@@ -68,7 +68,7 @@
 "Indri_indri",0.85,0,"Female-biased","Unbiased",1
 "Propithecus_edwardsi",0.95,0,"Female-biased",NA,1
 "Propithecus_verreauxi",1.01,0,"Female-biased","Male-biased",1
-"Eulemur_fulvus",0.91,0,"Female-biased","Male-biased",1
+"Eulemur_fulvus",0.91,0,"Female-biased","Unbiased",1
 "Hapalemur_griseus",1.1,0,NA,"Male-biased",1
 "Lemur_catta",1,0,"Female-biased","Female-biased",1
 "Varecia_variegata",1.03,1,"Female-biased","Female-biased",1
