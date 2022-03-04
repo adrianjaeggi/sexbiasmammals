@@ -18,7 +18,7 @@ library(rethinking)
 memory.limit(size=100000)
 load("post_bgc.1_looped.robj")
 load("post_mov.1_looped.robj")
-load("post_mov.2_looped.robj")
+load("post_bgc.2_looped.robj")
 load("post_bgc.4_looped.robj")
 
 ```
@@ -113,9 +113,9 @@ diff.fu.mov1<- p.mov1[[1]][,1]-p.mov1[[1]][,3]
 
 Overall, we found that male-biased participation was most likely in intergroup conflict across mammals (Fig. 1, Model 1, see also supplement). Specifically, participation in intergroup conflicts was most likely to be male-biased (probability of male bias = `r round(pred_probs_bgc.1_looped,2)[2,1]`, 95% credible interval = `r round(pred_probs_bgc.1_looped,2)[2,2]` – `r round(pred_probs_bgc.1_looped,2)[2,3]`) rather than female-biased (`r round(pred_probs_bgc.1_looped,2)[1,1]`, `r round(pred_probs_bgc.1_looped,2)[1,2]` – `r round(pred_probs_bgc.1_looped,2)[1,3]`) or unbiased (`r round(pred_probs_bgc.1_looped,2)[3,1]`, `r round(pred_probs_bgc.1_looped,2)[3,2]` – `r round(pred_probs_bgc.1_looped,2)[3,3]`), with `r round(100*sum(diff.mf.bgc1>0)/length(diff.mf.bgc1),0)`%, `r round(100*sum(diff.mu.bgc1>0)/length(diff.mu.bgc1),0)`%, and `r round(100*sum(p.bgc1[[1]][,2]>0.33)/length(p.bgc1[[1]][,2]),0)`% confidence that the probability of male bias was higher than that of female bias, unbiased, and chance, respectively. In contrast, leadership in collective movement was more likely to be female-biased (`r round(pred_probs_mov.1_looped,2)[1,1]`, `r round(pred_probs_mov.1_looped,2)[1,2]` – `r round(pred_probs_mov.1_looped,2)[1,3]`), as opposed to male-biased (`r round(pred_probs_mov.1_looped,2)[2,1]`, `r round(pred_probs_mov.1_looped,2)[2,2]` – `r round(pred_probs_mov.1_looped,2)[2,3]`) or unbiased (`r round(pred_probs_mov.1_looped,2)[3,1]`, `r round(pred_probs_mov.1_looped,2)[3,2]` – `r round(pred_probs_mov.1_looped,2)[3,3]`), with the difference in probabilities supported with `r round(100*sum(diff.fm.mov1>0)/length(diff.fm.mov1),0)`% and `r round(100*sum(diff.fu.mov1>0)/length(diff.fu.mov1),0)`% confidence respectively, and female bias was higher than expected by chance with `r round(100*sum(p.mov1[[1]][,1]>0.33)/length(p.mov1[[1]][,1]),0)`% confidence There was weak phylogenetic signal in both models (mean Pagel's λ and 95% CI for intergroup conflict = `r round(mean(lambda.bgc.1_looped),2)`, `r round(HPDI(lambda.bgc.1_looped, prob=0.95)[1],2)` – `r round(HPDI(lambda.bgc.1_looped, prob=0.95)[2],2)`); for movement = `r round(mean(lambda.mov.1_looped),2)`, `r round(HPDI(lambda.mov.1_looped, prob=0.95)[1],2)` – `r round(HPDI(lambda.mov.1_looped, prob=0.95)[2],2)`), somewhat reduced by strong priors on variance components, implying that this typical mammalian pattern of male-biased participation in intergroup conflict and female-biased leadership in movement also applies to some extent to ancestral species.
 
-These results did not change fundamentally when adding sexual dimorphism and resource defensibility as predictor variables (Model 2, see supplement for details); the only reasonably well-supported association was that male-biased leadership in movements was less likely when food was defendable vs non-defendable (mean odd’s ratio (OR) = `r round(mean(exp(post_mov.2_looped$b_muMalebiased_Food_resource_defendable)),2)`, 95% CI = `r round(HPDI(exp(post_mov.2_looped$b_muMalebiased_Food_resource_defendable), prob=0.95)[1],2)` – `r round(HPDI(exp(post_mov.2_looped$b_muMalebiased_Food_resource_defendable), prob=0.95)[2],2)`, probabilityOR<1 = `r round(100*sum(post_mov.2_looped$b_muMalebiased_Food_resource_defendable<0)/nrow(post_mov.2_looped),0)`%). Results did also not differ qualitatively between primates and non-primates (Model 3, see supplement for details). In terms of the link between sex bias across contexts (Model 4), the probability of male-biased participation in intergroup conflict was strongly reduced in species with female-biased leadership during movement (mean OR = `r round(mean(exp(post_bgc.4_looped$b_muMalebiased_Movement_zero_center.factFemaleMbiased)),2)`, 95% CI = `r round(HPDI(exp(post_bgc.4_looped$b_muMalebiased_Movement_zero_center.factFemaleMbiased), prob=0.95)[1],2)` – `r round(HPDI(exp(post_bgc.4_looped$b_muMalebiased_Movement_zero_center.factFemaleMbiased), prob=0.95)[2],2)`; probability OR<1 = `r round(100*sum(post_bgc.4_looped$b_muMalebiased_Movement_zero_center.factFemaleMbiased<0)/nrow(post_bgc.4_looped),0)`%), though other associations were much more uncertain (e.g. greater female bias in intergroup conflict when there is female bias in movement, OR = `r round(mean(exp(post_bgc.4_looped$b_muFemalebiased_Movement_zero_center.factFemaleMbiased)),2)`, 95% CI = `r round(HPDI(exp(post_bgc.4_looped$b_muFemalebiased_Movement_zero_center.factFemaleMbiased), prob=0.95)[1],2)` – `r round(HPDI(exp(post_bgc.4_looped$b_muFemalebiased_Movement_zero_center.factFemaleMbiased), prob=0.95)[2],2)`; probability OR>1 = `r round(100*sum(post_bgc.4_looped$b_muFemalebiased_Movement_zero_center.factFemaleMbiased>0)/nrow(post_bgc.4_looped),0)`%; see supplement for complete results, Fig. 2). 
+These results did not change fundamentally when adding sexual dimorphism and resource defensibility as predictor variables (Model 2, see supplement for details). For instance, male-biased participation in intergroup conflicts was somewhat less likely when food was defendable vs non-defendable, but with high uncertainty (mean odd’s ratio (OR) = `r round(mean(exp(post_bgc.2_looped$b_muMalebiased_Food_resource_defendable)),2)`, 95% CI = `r round(HPDI(exp(post_bgc.2_looped$b_muMalebiased_Food_resource_defendable), prob=0.95)[1],2)` – `r round(HPDI(exp(post_bgc.2_looped$b_muMalebiased_Food_resource_defendable), prob=0.95)[2],2)`, probabilityOR<1 = `r round(100*sum(post_bgc.2_looped$b_muMalebiased_Food_resource_defendable<0)/nrow(post_bgc.2_looped),0)`%). Results did also not differ qualitatively between primates and non-primates (Model 3, see supplement for details). In terms of the link between sex bias across contexts (Model 4), the probability of male-biased participation in intergroup conflict was strongly reduced in species with female-biased leadership during movement (mean OR = `r round(mean(exp(post_bgc.4_looped$b_muMalebiased_Movement_zero_center.factFemaleMbiased)),2)`, 95% CI = `r round(HPDI(exp(post_bgc.4_looped$b_muMalebiased_Movement_zero_center.factFemaleMbiased), prob=0.95)[1],2)` – `r round(HPDI(exp(post_bgc.4_looped$b_muMalebiased_Movement_zero_center.factFemaleMbiased), prob=0.95)[2],2)`; probability OR<1 = `r round(100*sum(post_bgc.4_looped$b_muMalebiased_Movement_zero_center.factFemaleMbiased<0)/nrow(post_bgc.4_looped),0)`%), though other associations were much more uncertain (e.g. greater female bias in intergroup conflict when there is female bias in movement, OR = `r round(mean(exp(post_bgc.4_looped$b_muFemalebiased_Movement_zero_center.factFemaleMbiased)),2)`, 95% CI = `r round(HPDI(exp(post_bgc.4_looped$b_muFemalebiased_Movement_zero_center.factFemaleMbiased), prob=0.95)[1],2)` – `r round(HPDI(exp(post_bgc.4_looped$b_muFemalebiased_Movement_zero_center.factFemaleMbiased), prob=0.95)[2],2)`; probability OR>1 = `r round(100*sum(post_bgc.4_looped$b_muFemalebiased_Movement_zero_center.factFemaleMbiased>0)/nrow(post_bgc.4_looped),0)`%; see supplement for complete results, Fig. 2). 
 
-```` {r figure}
+```` {r figure, eval=FALSE}
 library(ape)
 library(phytools)
 library(wesanderson)
@@ -123,12 +123,14 @@ library(TreeTools)
 
 # compute consensus tree to get tip order to be plotted
 # for some reason, the order of tip labels only updates after writing the tree -> write and re-read
+trees<- read.tree("Sex bias mammals 100 phylos.tre")
 cons.tree<- consensus.edges(trees)
 write.tree(cons.tree, "PhyForFigure.tre")
 cons.tree<- read.tree("PhyForFigure.tre")
 
 
-# create vector of traits per species
+# create vector of traits per species and match to order of cons.tree
+d<- read.csv("Sex bias mammals data.csv")
 t.mov<- table(d$Genus_species, d$Movement_zero_center.fact)
 t2.mov<- t.mov[ order(match(rownames(t.mov), cons.tree$tip.label)), ]
 t.bgc<- table(d$Genus_species, d$Between.Conflict_zero_center.fact)
@@ -137,7 +139,7 @@ t2.bgc<- t.bgc[ order(match(rownames(t.bgc), cons.tree$tip.label)), ]
 tiff("Figure 1.tif", compression="lzw", height=6.0, width=6.0, units="cm", res=600, pointsize=5)
 
 # plot trees
-densityTree(ntrees,type="cladogram", show.axis=FALSE, fsize=0.5, color=wes_palettes$Moonrise2[4], offset=0.5, lwd=1)
+densityTree(trees,type="cladogram", show.axis=FALSE, fsize=0.5, color=wes_palettes$Moonrise2[4], offset=0.5, lwd=1)
 
 ## add colored boxes for character states to tree
 for(i in 1:nrow(t2.mov)){if(t2.mov[i,"Male-biased"]>0) points(x=-1, y=0+i, pch=15, cex=0.7, col=wes_palettes$Moonrise2[1])}
@@ -159,19 +161,19 @@ text(x=c(1,2), xpd=NA, adj=1, srt=45, labels=c("Movement", "Intergroup\n conflic
 text(y=c(0,0.2,0.4,0.6,0.8,1), adj=0.15, xpd=NA, labels=c("0.0", "0.2", "0.4", "0.6", "0.8", "1.0"), x=0, cex=0.75)
 text(y=0.5, xpd=NA, labels="Probability of sex bias", srt=90, x=-0.2, cex=0.75)
 
-points(0.75, pred_probs_mov.1.cons["Male-biased","mean"], pch=16, col=wes_palettes$Moonrise2[1], cex=2)
-arrows(0.75, pred_probs_mov.1.cons["Male-biased","lwr95"], 0.75, pred_probs_mov.1.cons["Male-biased","upr95"], length=0, angle=90, col=wes_palettes$Moonrise2[1], lwd=2)
-points(1, pred_probs_mov.1.cons["Unbiased","mean"], pch=16, col=wes_palettes$Moonrise2[2], cex=2)
-arrows(1, pred_probs_mov.1.cons["Unbiased","lwr95"], 1, pred_probs_mov.1.cons["Unbiased","upr95"], length=0, angle=90, col=wes_palettes$Moonrise2[2], lwd=2)
-points(1.25, pred_probs_mov.1.cons["Female-biased","mean"], pch=16, col=wes_palettes$Moonrise2[3], cex=2)
-arrows(1.25, pred_probs_mov.1.cons["Female-biased","lwr95"], 1.25, pred_probs_mov.1.cons["Female-biased","upr95"], length=0, angle=90, col=wes_palettes$Moonrise2[3], lwd=2)
+points(0.75, pred_probs_mov.1_looped[2,1], pch=16, col=wes_palettes$Moonrise2[1], cex=2)
+arrows(0.75, pred_probs_mov.1_looped[2,2], 0.75, pred_probs_mov.1_looped[2,3], length=0, angle=90, col=wes_palettes$Moonrise2[1], lwd=2)
+points(1, pred_probs_mov.1_looped[3,1], pch=16, col=wes_palettes$Moonrise2[2], cex=2)
+arrows(1, pred_probs_mov.1_looped[3,2], 1, pred_probs_mov.1_looped[3,3], length=0, angle=90, col=wes_palettes$Moonrise2[2], lwd=2)
+points(1.25, pred_probs_mov.1_looped[1,1], pch=16, col=wes_palettes$Moonrise2[3], cex=2)
+arrows(1.25, pred_probs_mov.1_looped[1,2], 1.25, pred_probs_mov.1_looped[1,3], length=0, angle=90, col=wes_palettes$Moonrise2[3], lwd=2)
 
-points(1.75, pred_probs_bgc.1.cons["Male-biased","mean"], pch=16, col=wes_palettes$Moonrise2[1], cex=2)
-arrows(1.75, pred_probs_bgc.1.cons["Male-biased","lwr95"], 1.75, pred_probs_bgc.1.cons["Male-biased","upr95"], length=0, angle=90, col=wes_palettes$Moonrise2[1], lwd=2)
-points(2, pred_probs_bgc.1.cons["Unbiased","mean"], pch=16, col=wes_palettes$Moonrise2[2], cex=2)
-arrows(2, pred_probs_bgc.1.cons["Unbiased","lwr95"], 2, pred_probs_bgc.1.cons["Unbiased","upr95"], length=0, angle=90, col=wes_palettes$Moonrise2[2], lwd=2)
-points(2.25, pred_probs_bgc.1.cons["Female-biased","mean"], pch=16, col=wes_palettes$Moonrise2[3], cex=2)
-arrows(2.25, pred_probs_bgc.1.cons["Female-biased","lwr95"], 2.25, pred_probs_bgc.1.cons["Female-biased","upr95"], length=0, angle=90, col=wes_palettes$Moonrise2[3], lwd=2)
+points(1.75, pred_probs_bgc.1_looped[2,1], pch=16, col=wes_palettes$Moonrise2[1], cex=2)
+arrows(1.75, pred_probs_bgc.1_looped[2,2], 1.75, pred_probs_bgc.1_looped[2,3], length=0, angle=90, col=wes_palettes$Moonrise2[1], lwd=2)
+points(2, pred_probs_bgc.1_looped[3,1], pch=16, col=wes_palettes$Moonrise2[2], cex=2)
+arrows(2, pred_probs_bgc.1_looped[3,2], 2, pred_probs_bgc.1_looped[3,3], length=0, angle=90, col=wes_palettes$Moonrise2[2], lwd=2)
+points(2.25, pred_probs_bgc.1_looped[1,1], pch=16, col=wes_palettes$Moonrise2[3], cex=2)
+arrows(2.25, pred_probs_bgc.1_looped[1,2], 2.25, pred_probs_bgc.1_looped[1,3], length=0, angle=90, col=wes_palettes$Moonrise2[3], lwd=2)
 
 par(fig = c(0,1,0,1), new=FALSE)
 
